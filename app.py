@@ -4,7 +4,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain.document_loaders import PyPDFLoader
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
 from langchain.vectorstores import FAISS
 from dotenv import load_dotenv
 import streamlit as st
@@ -48,7 +47,7 @@ def get_vectorstore(text_chunks):
 
     return vectorstore
 
-# Creates a conversation chain from the vector store,
+# Creates a conversation chain from the vector store
 
 
 def get_conversation_chain(vectorstore):
@@ -66,6 +65,11 @@ def get_conversation_chain(vectorstore):
 
 
 def handle_userinput(user_input):
+    if st.session_state.conversation is None:
+        st.warning(
+            "Please upload a PDF file and click Submit to start a conversation.")
+        return
+
     response = st.session_state.conversation({'question': user_input})
     chat_history = response['chat_history']
     answer = response['answer']
@@ -97,16 +101,19 @@ def main():
         st.subheader("Upload Your File")
         pdf_doc = st.file_uploader("Upload a PDF file")
         if st.button("Submit"):
-            with st.spinner("Processing"):
-                # Extract text from the PDF
-                text = extract_text_from_pdf(pdf_doc)
-                # Split the text into chunks
-                text_chunks = get_text_chunks(text)
-                # Create a vector store from the text chunks
-                vectorstore = get_vectorstore(text_chunks)
-                # Create a conversation chain from the vector store
-                st.session_state.conversation = get_conversation_chain(
-                    vectorstore)
+            if pdf_doc is not None:
+                with st.spinner("Processing"):
+                    # Extract text from the PDF
+                    text = extract_text_from_pdf(pdf_doc)
+                    # Split the text into chunks
+                    text_chunks = get_text_chunks(text)
+                    # Create a vector store from the text chunks
+                    vectorstore = get_vectorstore(text_chunks)
+                    # Create a conversation chain from the vector store
+                    st.session_state.conversation = get_conversation_chain(
+                        vectorstore)
+            else:
+                st.warning("Please upload a PDF file before clicking Submit.")
 
 
 if __name__ == "__main__":
