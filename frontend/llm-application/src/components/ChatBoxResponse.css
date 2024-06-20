@@ -1,0 +1,40 @@
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+  width: 50%;
+  float: left;
+}
+
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.message-row.user {
+  justify-content: flex-end;
+}
+
+.message-row.ai {
+  justify-content: flex-start;
+}
+
+.message {
+  max-width: 60%;
+  padding: 8px 12px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.message.user {
+  background-color: #007bff; /* Example blue color for user messages */
+}
+
+.message.ai {
+  background-color: #666; /* Example grey color for AI responses */
+}

@@ -10,6 +10,7 @@ import streamlit as st
 import tempfile
 import os
 
+
 # Takes a PDF file and extracts the text content
 
 
