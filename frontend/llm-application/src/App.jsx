@@ -6,6 +6,8 @@ import Response from "./components/Response";
 import PdfList from "./components/PdfList";
 import TextArea from "./components/TextArea";
 import ChatBoxResponse from "./components/ChatBoxResponse";
+import Test from "./components/test";
+import ChatModelCallTool from "./components/ChatModelCallTool";
 
 function App() {
   const [pdfFile, setPdfFile] = useState(null);
@@ -28,6 +30,8 @@ function App() {
   const [chatInput, setChatInput] = useState("");
   const [amb, setAmb] = useState("");
   const [messages, setMessages] = useState([]);
+  const [ragFusion, setRagFusion] = useState("");
+  const [ragResponse, setRagResponse] = useState("");
 
   useEffect(() => {
     handleRetreivePdf();
@@ -40,7 +44,7 @@ function App() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://6f3f-69-119-209-231.ngrok-free.app/api/info",
+        "https://4be4-69-119-209-231.ngrok-free.app/api/info",
         {
           input: textResponse.answer,
           additionalInfo: additionalInfo,
@@ -62,7 +66,7 @@ function App() {
 
     try {
       await axios.post(
-        "https://6f3f-69-119-209-231.ngrok-free.app/upload",
+        "https://4be4-69-119-209-231.ngrok-free.app/upload",
         formData
       );
     } catch (error) {
@@ -73,11 +77,14 @@ function App() {
   const handleAskQuestion = async () => {
     try {
       const response = await axios.post(
-        "https://6f3f-69-119-209-231.ngrok-free.app/ask",
+        "https://4be4-69-119-209-231.ngrok-free.app/ask",
         {
           question: userInput,
         }
       );
+      console.log(response.data);
+      // setRagResponse(response.data.standard_rag);
+      // setRagFusion(response.data.rag_fusion);
       setResponse(response.data.answer);
       setSourceDocuments(response.data.source_documents_info);
       setInputTokens(response.data.input_tokens);
@@ -90,7 +97,7 @@ function App() {
   const handleRetreivePdf = async () => {
     try {
       const response = await axios.get(
-        "https://6f3f-69-119-209-231.ngrok-free.app/pdfs",
+        "https://4be4-69-119-209-231.ngrok-free.app/pdfs",
         {
           headers: {
             "ngrok-skip-browser-warning": "true",
@@ -117,7 +124,7 @@ function App() {
   const handleGptQuery = async () => {
     try {
       const response = await axios.post(
-        "https://6f3f-69-119-209-231.ngrok-free.app/api/gpt",
+        "https://4be4-69-119-209-231.ngrok-free.app/api/gpt",
         {
           input: gptInput,
           temperature: temperature,
@@ -138,7 +145,7 @@ function App() {
   ) => {
     try {
       const response = await axios.post(
-        "https://6f3f-69-119-209-231.ngrok-free.app/api/bot",
+        "https://4be4-69-119-209-231.ngrok-free.app/api/bot",
         {
           input: textAreaValue,
           option: option,
@@ -166,7 +173,7 @@ function App() {
   const handleTextQuery = async () => {
     try {
       const response = await axios.post(
-        "https://6f3f-69-119-209-231.ngrok-free.app/api/ambiguous",
+        "https://4be4-69-119-209-231.ngrok-free.app/api/ambiguous",
         {
           input: chatInput === "" ? "reset" : chatInput,
         }
@@ -207,6 +214,22 @@ function App() {
         inputTokens={inputTokens}
         outputTokens={outputTokens}
       />
+      <Test />
+      {ragFusion === "" ? (
+        ""
+      ) : (
+        <>
+          answer rag <Response response={ragResponse} />
+        </>
+      )}
+      {ragFusion === "" ? (
+        ""
+      ) : (
+        <>
+          answer rag fusion
+          <Response response={ragFusion} />
+        </>
+      )}
       {/* GPT Question */}
       <Question
         value={gptInput}
@@ -253,6 +276,7 @@ function App() {
       <button onClick={handleTextQuery}>Clear</button>
       {/* <Response response={amb} /> */}
       <ChatBoxResponse messages={messages} />
+      <ChatModelCallTool />
     </div>
   );
 }
